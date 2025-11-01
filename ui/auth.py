@@ -5,11 +5,12 @@ if "user" not in st.session_state:
     st.session_state.user = None
 
 def login_page():
-    st.title("🔐 Login")
+    st.header("MoneyMagic Lite")
+    st.subheader("🔐 Login")
     with st.form("login_form"):
         login_email = st.text_input("Email", key="login_email")
         login_password = st.text_input("Password", type="password", key="login_password")
-        login_submitted = st.form_submit_button("Sign in")
+        login_submitted = st.form_submit_button("Sign in", type='primary')
         if login_submitted:
             try:
                 res = sign_in(login_email, login_password)
@@ -32,6 +33,7 @@ def login_page():
 
 
 def signup_page():
+    st.subheader("🔐 Login")
     with st.form("signup_form"):
         signup_email = st.text_input("Email", key="signup_email")
         signup_password = st.text_input("Password", type="password", key="signup_password")

@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv("moneymagic.env")
 # Supabase Python client (supabase-py)
 try:
 	from supabase import create_client  # type: ignore

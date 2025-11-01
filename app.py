@@ -19,7 +19,7 @@ def main_page():
             st.write(f"Welcome {st.session_state.user['email']}!")
             show_accounts_view(user)
             show_balances_view(user)
-            if st.button("Logout"):
+            if st.button("Logout", type='primary'):
                 signout_page()
                 st.rerun()
             st.info("Developed with ❤️ by :green[Pavan Gontina]")
