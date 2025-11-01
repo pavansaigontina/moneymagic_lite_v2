@@ -1,2 +1,5 @@
 /test.py
 /users.csv
+/__pycache__/
+/*.env
+/.env

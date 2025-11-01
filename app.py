@@ -4,7 +4,7 @@ from ui.accounts_view import show_accounts_view
 from ui.balances_view import show_balances_view
 from ui.transactions_view import show_transactions_view
 
-st.set_page_config(page_title="Login Page", layout="centered")
+st.set_page_config(page_title="Money Magic lite", layout="wide")
 
 # Session state to track login
 if "logged_in" not in st.session_state:
