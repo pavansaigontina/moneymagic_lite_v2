@@ -69,13 +69,14 @@ def fetch_transactions(
             'July','August','September','October','November','December'
         ]
         month_index = months.index(month_filter) + 1
-        year = datetime.datetime.today().year  # ✅ fixed
+        year = datetime.datetime.today().year 
         start_of_month = datetime.date(year, month_index, 1)
         # first day of next month, then subtract 1 day
         end_of_month = (start_of_month.replace(day=28) + datetime.timedelta(days=4)).replace(day=1) - datetime.timedelta(days=1)
 
         query = query.gte('date', start_of_month.isoformat())
         query = query.lte('date', end_of_month.isoformat())
+        
 
     # Apply optional filters
     if start_date:
@@ -90,6 +91,7 @@ def fetch_transactions(
 
     # Sort results
     query = query.order('date', desc=True)
+    query = query.range(0, 9999)
 
     # Execute
     response = query.execute()
