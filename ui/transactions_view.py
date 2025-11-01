@@ -87,15 +87,10 @@ def show_transactions_view(user):
 
     st.write(f"Showing {len(tx_df)} transactions")
     if not tx_df.empty:
-    # Convert Date column to datetime.date
+        # Convert Date column to datetime.date
         if 'Date' in tx_df.columns:
             tx_df['Date'] = pd.to_datetime(tx_df['Date'], errors='coerce').dt.date
 
-        # Keep a copy of the original data in session_state
-        if "original_tx_df" not in st.session_state:
-            st.session_state["original_tx_df"] = tx_df.copy()
-
-        # Editable table
         edited = st.data_editor(
             tx_df,
             num_rows="dynamic",
@@ -111,14 +106,12 @@ def show_transactions_view(user):
             },
             key="tx_editor",
         )
-
-        # Compare edited vs original
-        if not edited.equals(st.session_state["original_tx_df"]):
+        # Save edits
+        if st.button("💾 Save edits"):
             try:
                 new_ids = set(edited["Transaction_ID"].astype(str).tolist())
-                old_ids = set(st.session_state["original_tx_df"]["Transaction_ID"].astype(str).tolist())
+                old_ids = set(tx_df["Transaction_ID"].astype(str).tolist())
                 deleted = old_ids - new_ids
-
                 for did in deleted:
                     delete_transaction_by_uuid(did)
 
@@ -145,12 +138,10 @@ def show_transactions_view(user):
                             "type": row.get("Type", "Expense"),
                         }
                         update_transaction_by_uuid(txid, updates)
-
-                st.session_state["original_tx_df"] = edited.copy()
-                st.toast("✅ Changes auto-saved", icon="💾")
-
+                st.success("Saved changes")
+                st.rerun()
             except Exception as e:
-                st.error(f"Error while saving changes: {e}")
+                st.error(str(e))
 
         # --- Account summary and visuals ---
         st.markdown("---")
