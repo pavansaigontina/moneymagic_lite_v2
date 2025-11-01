@@ -96,6 +96,10 @@ def fetch_transactions(
     # Execute
     response = query.execute()
     
+    print("Query debug:", query)
+    print("Response count:", len(response.data) if response.data else 0)
+
+
     if not response.data:
         return pd.DataFrame(columns=["Transaction_ID", "Date", "Account", "Category", "Description", "Type", "Amount"])
     
