@@ -90,8 +90,8 @@ def show_transactions_view(user):
         # Convert Date column to datetime.date
         if 'Date' in tx_df.columns:
             tx_df['Date'] = pd.to_datetime(tx_df['Date'], errors='coerce').dt.date
-        if "Transaction_ID" in tx_df.columns:
-            tx_df = tx_df.set_index("Transaction_ID", drop=False)
+        # if "Transaction_ID" in tx_df.columns:
+        #     tx_df = tx_df.set_index("Transaction_ID", drop=False)
 
         # st.write("User ID:", user['id'])
         # st.write("Selected Month:", selected_month)
