@@ -1,0 +1,7 @@
+[theme]
+primaryColor = "#1e3a8a"              # Deep navy blue - trust, stability, authority
+backgroundColor = "#fefefe"            # Off-white - softer than pure white
+secondaryBackgroundColor = "#f8fafc"   # Very light gray - subtle distinction
+textColor = "#1f2937"                  # Charcoal gray - highly readable
+linkColor = "#1e40af"                  # Slightly lighter navy for links
+borderColor = "#d1d5db"                # Medium gray borders - clear definition
