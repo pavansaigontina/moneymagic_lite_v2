@@ -22,7 +22,7 @@ def show_transactions_view(user):
 
     # ------------- Add Transaction -------------
 
-    with st.expander("➕ Add Transaction", expanded=False):
+    with st.expander("Add Transaction", expanded=False, icon='➕'):
         with st.form("add_tx"):
             t_date = st.date_input("Date", value=date.today())
             if account_names:
@@ -54,7 +54,7 @@ def show_transactions_view(user):
     
     # ------------- Filter Transactions -------------
 
-    with st.expander("🔍 Filters", expanded=False):
+    with st.expander("Filters", expanded=False, icon='🔍'):
         col1, col2, col3 = st.columns(3)
         with col1:
             default_start = date(datetime.now().year, current_month_index + 1, 1)
@@ -85,17 +85,11 @@ def show_transactions_view(user):
 
     # ------------- SHOW Transactions -------------
 
-    st.write(f"Showing {len(tx_df)} transactions")
+    st.write(f"Showing {len(tx_df)} transactions till {default_end}")
     if not tx_df.empty:
         # Convert Date column to datetime.date
         if 'Date' in tx_df.columns:
             tx_df['Date'] = pd.to_datetime(tx_df['Date'], errors='coerce').dt.date
-        # if "Transaction_ID" in tx_df.columns:
-        #     tx_df = tx_df.set_index("Transaction_ID", drop=False)
-
-        # st.write("User ID:", user['id'])
-        # st.write("Selected Month:", selected_month)
-        # st.write("Rows fetched:", len(tx_df))
 
         edited = st.data_editor(
             tx_df,
@@ -152,8 +146,6 @@ def show_transactions_view(user):
         # --- Account summary and visuals ---
         st.markdown("---")
         st.subheader(f"Account Summary for {selected_month}")
-        top_balance_viewer = st.empty()
-        # Rebuild monthly data to include balances
         summary_rows = []
         debit_opening, credit_opening = 0.0, 0.0
         total_income_summary, total_spent_summary = 0.0, 0.0
@@ -261,7 +253,7 @@ def show_transactions_view(user):
 
             # --- Top-line balance display ---
             with metrics_bar:
-                st.write(f"💰 Available Balance ({selected_month}): :green[₹{total_remaining:,.2f}]")
+                st.markdown(f"#### 💰 Available Balance ({selected_month[:3]}): :green[₹{total_remaining:,.2f}]")
         except Exception as e:
             st.info("Please Add Transactions")
     
@@ -278,15 +270,16 @@ def show_transactions_view(user):
         col_metrics1, col_metrics2, col_metrics3, col_metrics4 = st.columns(4)
         with col_metrics1:
             st.metric("Total Debit Spending", f'₹{total_debit_spent:,.2f}')
-            st.metric("Total Income", f"₹{total_income:,.2f}")
+            st.metric("Total Credit Spending", f'₹{total_credit_spent:,.2f}')
         with col_metrics2:
             st.metric("Total Credit Outstanding", f'₹{total_credit_remaining:,.2f}')
-            st.metric("Total Expenses", f"₹{total_expense:,.2f}")
+            st.metric("Total Expenses (Debit + Credit)", f"₹{total_expense:,.2f}")
         with col_metrics3:
             st.metric("Total Debit Balance", f'₹{total_debit_remaining:,.2f}')
-            st.metric("Net Flow", f"₹{net_flow:,.2f}", delta=net_flow, delta_color="normal" if net_flow >= 0 else "inverse")
-        with col_metrics4:
             st.metric("Total Remaining Balance", f'₹{total_remaining:,.2f}')
+            # st.metric("Net Flow", f"₹{net_flow:,.2f}", delta=net_flow, delta_color="normal" if net_flow >= 0 else "inverse")
+        with col_metrics4:
+            st.metric("Total Income", f"₹{total_income:,.2f}")
             st.metric("Total Transactions", total_transactions)
     else:
         st.info("No transaction data to display monthly metrics.")
@@ -302,7 +295,7 @@ def show_transactions_view(user):
 
     if not tx_df.empty:
         # --- 1️⃣ Daily Expenses Trend (Line Chart) ---
-        st.markdown("#### 1️⃣ Daily Expenses Trend")
+        st.markdown("#### Daily Expenses Trend")
         daily_expenses = (
             tx_df[tx_df["Type"] == "Expense"]
             .groupby("Date")["Amount"]
@@ -326,7 +319,7 @@ def show_transactions_view(user):
             st.info("No expenses recorded for this month.")
 
         # --- 2️⃣ Category-wise Spending (Pie Chart) ---
-        st.markdown("#### 2️⃣ Category-wise Spending Distribution")
+        st.markdown("#### Category-wise Spending Distribution")
         category_spend = (
             tx_df[tx_df["Type"] == "Expense"]
             .groupby("Category")["Amount"]
@@ -349,7 +342,7 @@ def show_transactions_view(user):
             st.info("No category data available for expenses.")
 
         # --- 3️⃣ Account-wise Income vs Expense (Grouped Bar) ---
-        st.markdown("#### 3️⃣ Income vs Expense by Account")
+        st.markdown("#### Income vs Expense by Account")
 
         account_summary = (
             tx_df.groupby(["Account", "Type"])["Amount"]
@@ -390,8 +383,8 @@ def show_transactions_view(user):
             st.info("No account data available for income/expense comparison.")
 
 
-        # --- 4️⃣ Cumulative Spending Over Time (Line) ---
-        st.markdown("#### 4️⃣ Cumulative Spending Over the Month")
+        # --- Cumulative Spending Over Time (Line) ---
+        st.markdown("#### Cumulative Spending Over the Month")
         if not daily_expenses.empty:
             daily_expenses["Cumulative"] = daily_expenses["Amount"].cumsum()
             fig4 = px.line(
@@ -406,35 +399,25 @@ def show_transactions_view(user):
             fig4.update_layout(hovermode="x unified")
             st.plotly_chart(fig4, use_container_width=True)
 
-        # --- 5️⃣ Spending vs Income Ratio (Gauge / Indicator) ---
-        st.markdown("#### 5️⃣ Spending vs Income Ratio")
-        total_income = tx_df[tx_df["Type"] == "Income"]["Amount"].sum()
-        total_expense = tx_df[tx_df["Type"] == "Expense"]["Amount"].sum()
-        ratio = (total_expense / total_income * 100) if total_income > 0 else 0
+        st.markdown("#### Expense-to-Income Ratio Over Time")
 
-        fig5 = go.Figure(
-            go.Indicator(
-                mode="gauge+number+delta",
-                value=ratio,
-                title={"text": "Spending-to-Income Ratio (%)"},
-                delta={"reference": 100, "increasing": {"color": "red"}},
-                gauge={
-                    "axis": {"range": [0, 200]},
-                    "bar": {"color": "darkred" if ratio > 100 else "green"},
-                    "steps": [
-                        {"range": [0, 80], "color": "lightgreen"},
-                        {"range": [80, 100], "color": "gold"},
-                        {"range": [100, 200], "color": "#EF553B"},
-                    ],
-                    "threshold": {
-                        "line": {"color": "black", "width": 4},
-                        "thickness": 0.75,
-                        "value": ratio,
-                    },
-                },
-            )
+        ratio_df = (
+            tx_df.groupby(["Date", "Type"])["Amount"].sum()
+            .unstack(fill_value=0)
+            .reset_index()
         )
-        fig5.update_layout(height=250, margin=dict(t=50, b=30))
+        ratio_df["Ratio (%)"] = ratio_df["Expense"] / ratio_df["Income"] * 100
+
+        fig5 = go.Figure()
+        fig5.add_trace(go.Bar(x=ratio_df["Date"], y=ratio_df["Ratio (%)"], name="Ratio (%)"))
+        fig5.add_hline(y=100, line_dash="dash", line_color="red")
+
+        fig5.update_layout(
+            title="Expense-to-Income Ratio Over Time",
+            yaxis_title="Ratio (%)",
+            height=300,
+            margin=dict(t=50, b=30),
+        )
         st.plotly_chart(fig5, use_container_width=True)
 
     else:

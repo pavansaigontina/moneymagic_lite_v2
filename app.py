@@ -4,7 +4,20 @@ from ui.accounts_view import show_accounts_view
 from ui.balances_view import show_balances_view
 from ui.transactions_view import show_transactions_view
 
-st.set_page_config(page_title="Money Magic lite", layout="wide")
+st.set_page_config(
+    page_title="Money Magic Lite",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        "Get help": "mailto:pavangontina@zohomail.in", 
+        "Report a Bug": "mailto:pavangontina@zohomail.in",
+        "About": """
+        ### Money Magic Lite 💸  
+        A lightweight personal finance tracker.  
+        Contact: pavangontina@zohomail.in
+        """
+    }
+)
 
 # Session state to track login
 if "logged_in" not in st.session_state:
