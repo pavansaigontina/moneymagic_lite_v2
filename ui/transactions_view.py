@@ -399,40 +399,32 @@ def show_transactions_view(user):
             fig4.update_layout(hovermode="x unified")
             st.plotly_chart(fig4, use_container_width=True)
 
-        # st.markdown("#### Expense-to-Income Ratio Over Time")
+        st.markdown("### Financial Flow Overview")
 
-        # ratio_df = (
-        #     tx_df.groupby(["Date", "Type"])["Amount"].sum()
-        #     .unstack(fill_value=0)
-        #     .reset_index()
-        # )
-        # st.write(ratio_df)
-        # if "Income" in ratio_df.columns and ratio_df["Income"].sum() > 0:
-        #     # Calculate ratio safely (avoid divide by zero)
-        #     ratio_df["Ratio (%)"] = (
-        #         ratio_df["Expense"] / ratio_df["Income"].replace(0, float("nan")) * 100
-        #     ).fillna(0)
+        categories = ["Total Income", "Total Expenses", "Net Flow"]
+        values = [total_income, total_expense, net_flow]
 
-        #     # Plot
-        #     fig5 = go.Figure()
-        #     fig5.add_trace(go.Bar(
-        #         x=ratio_df["Date"],
-        #         y=ratio_df["Ratio (%)"],
-        #         name="Ratio (%)"
-        #     ))
-        #     fig5.add_hline(y=100, line_dash="dash", line_color="red")
+        fig = go.Figure(
+            data=[
+                go.Bar(
+                    x=categories,
+                    y=values,
+                    text=[f"₹{v:,.2f}" for v in values],
+                    textposition="auto",
+                    marker_color=["#2E86C1", "#EF553B", "#58D68D"],
+                )
+            ]
+        )
 
-        #     fig5.update_layout(
-        #         title="Expense-to-Income Ratio Over Time",
-        #         yaxis_title="Ratio (%)",
-        #         height=300,
-        #         margin=dict(t=50, b=30),
-        #     )
-        #     st.plotly_chart(fig5, use_container_width=True)
+        fig.update_layout(
+            height=350,
+            title="Income vs Expenses vs Net Flow",
+            yaxis_title="Amount (₹)",
+            xaxis_title="Category",
+            margin=dict(t=50, b=30),
+        )
 
-        # else:
-        #     st.info("No Income transactions found to show chart")
-
+        st.plotly_chart(fig, use_container_width=True)
 
     else:
         st.info("No data available to show visualizations.")

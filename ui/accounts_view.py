@@ -14,7 +14,7 @@ def show_accounts_view(user):
             name = st.text_input("Account name")
             atype = st.selectbox("Type", ["Debit","Credit"])
             notes = st.text_area("Notes (optional)")
-            if st.form_submit_button("Add account", type="primary"):
+            if st.form_submit_button("Add account"):
                 if not name:
                     st.error("Name required")
                 else:
@@ -45,7 +45,7 @@ def show_accounts_view(user):
                     new_type = st.selectbox(f"type_{a['id']}", ["Debit","Credit"], 
                                           index=0 if a['type']=="Debit" else 1)
                 with c3:
-                    if st.button("Save", key=f"save_acc_{a['id']}", type="primary"):
+                    if st.button("Save", key=f"save_acc_{a['id']}"):
                         try:
                             result = update_account(a['id'], 
                                                  name=new_name.strip(), 
