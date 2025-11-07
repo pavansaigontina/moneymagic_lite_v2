@@ -102,7 +102,7 @@ def show_transactions_view(user):
                 "Description": st.column_config.TextColumn("Description"),
                 "Type": st.column_config.SelectboxColumn("Type", options=["Expense", "Income"]),
                 "Amount": st.column_config.NumberColumn("Amount", min_value=0.0, format="%.2f"),
-                "Transaction_ID": st.column_config.Column("Transaction_ID", disabled=True),
+                #"Transaction_ID": st.column_config.Column("Transaction_ID", disabled=True),
             },
             key="tx_editor",
         )
